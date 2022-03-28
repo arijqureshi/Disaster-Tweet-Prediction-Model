@@ -1,8 +1,13 @@
 Arij Qureshi, Neel Patil, Sunfee Kim
+
 Pantelis Monogioudis
+
 CS 301
+
 27 March 2022
+
 Project Proposal Group 6
+
 
   The problem we will be investigating is tweets about disasters or unsafe situations. We would like to create a model to predict whether or not a certain tweet is about a disaster or not. People are looking to actively monitor twitter to respond to emergency situations, as Twitter is often used as a quick way to relay information.
   
