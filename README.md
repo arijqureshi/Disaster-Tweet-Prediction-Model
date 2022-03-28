@@ -22,7 +22,10 @@ The data used will be the dataset given in the [Kaggle competition](https://www.
   A concept we would like to work towards is to confirm the locations/settings of the disasters if it is real. This would require additional learning algorithms and possibly setting news rules that can help us narrow down locations.
  
  Bibliography
+ 
 [Top NLP Algorithm Concepts](https://www.datasciencecentral.com/top-nlp-algorithms-amp-concepts/)
+
 [Ensemble Learning Methods](https://machinelearningmastery.com/tour-of-ensemble-learning-algorithms/)
+
 [Multinomial Naive Bayes Theorem](https://www.mygreatlearning.com/blog/multinomial-naive-bayes-explained/)
 
