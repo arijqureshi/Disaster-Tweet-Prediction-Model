@@ -11,7 +11,7 @@ Project Proposal Group 6
 
   The problem we will be investigating is tweets about disasters or unsafe situations. We would like to create a model to predict whether or not a certain tweet is about a disaster or not. People are looking to actively monitor twitter to respond to emergency situations, as Twitter is often used as a quick way to relay information.
   
-	We will use different documentation and articles that delve into different ways of solving natural language processing problems. Some of the reading already found is based on ensemble learning algorithms, multinomial naive bayes theorem, and other methods to work on and improve our algorithm. These will be further explored as we dive deeper into the problem as well.
+  We will use different documentation and articles that delve into different ways of solving natural language processing problems. Some of the reading already found is based on ensemble learning algorithms, multinomial naive bayes theorem, and other methods to work on and improve our algorithm. These will be further explored as we dive deeper into the problem as well.
 	
 The data used will be the dataset given in the Kaggle competition we are entering. (https://www.kaggle.com/competitions/nlp-getting-started/overview/description) If we need more data we will scrape Tweets and hand classify tweets, but this may not be necessary.
 
