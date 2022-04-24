@@ -62,6 +62,7 @@ for i in range(0, 11):
 <br>
 The fact that a 0 value for this LSC would be detrimental to the model is reflected in the graph shown above as the accuracy of the model when the hyperparameter is equal to 0 is near 50%, just barely better than a random guess for an output. Overall, our results show that the smoothing constant’s actual value does not matter so long as it is not equal to 0.
 <br>
+
 ## Conclusion
 
 Using these graphs, the best results for the model came from keeping the hyperparameter for the Laplace Smoothing Constant at 1, using 5 synonyms of non-stop words per tweet, and training with 80% of the dataset. Experiments were also run to see if increasing the Laplace Smoothing Constant above 1 affected the accuracy but it did not yield any significant increase. The accuracy for our final model was ~0.798 but it is subject to change with randomness resulting in accuracies generally between 0.7904 and 0.7990. A possible improvement in the current final model would be the use of a noise function that reduces the noise that some buzz words may cause. These words are likely to appear in many tweets both true and false, without adding much meaning to the actual tweet. In cases like that, they would have to have reduced weight in the probabilities(but not zero). From this project, we were able to get a solid insight into the world of Natural Language Processing, specifically using Multinomial Naive Bayes Theorem to solve our problem.
