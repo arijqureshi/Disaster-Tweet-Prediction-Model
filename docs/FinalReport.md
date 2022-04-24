@@ -1,0 +1,67 @@
+# Using Multinomial Naive Bayes Natural Language Processing for Disaster Tweets
+
+*By: Arij Qureshi, Neel Patil, Sunfee Kim*
+
+*Abstract* <br>
+> The problem which we have investigated is a classification problem of tweets from the social media site Twitter, to decide if they are about dangerous/life threatening situations or not just based on natural language processing. Our approach to solving this problem was using Multinomial Naive Bayes theory, and creating a Natural Language Processing model from scratch based upon said theory. This theory involves“naively” assuming that each word has an individual probability of belonging to a certain class - in this case, either being disastrous or not. Using this knowledge, we created a model that, using training data which has tweets and target labels for each tweet, assigns probabilities to each word being part of each output class. Then, to calculate the probability of a certain tweet being about a disaster, we looked at the probability of each individual word and then compounded them into a total probability for the tweet using Bayes Theorem. This would output two final probabilities, one probability for the tweet not being about a disaster, and one probability for the tweet being about a disaster. Both of these probabilities would subsequently sum to 1. From our model, in the end we were able to predict tweets with an accuracy around 80%, a well rounded prediction which was not overfitting on our training dataset. The model we created was also optimized using jax as compared to numpy, involving some jax specific operations such as jit(just in time), and parallelization operations as well. Overall, we believe we created a model that satisfies our original goals and hypothesis that Multinomial Naive Bayes would be a viable way to create a solution to this Disaster Tweets problem.
+
+*Introduction*
+
+The problem we chose to investigate was from a Kaggle competition to classify postings(“tweets”) to the social media website Twitter as being about a real-life disaster or not. Twitter has become one of the first lines of communication for many people, even in times of emergency, with users quickly reporting dangerous situations on the website in real time. Due to this, disaster-relief and news organizations have been seeking to monitor Twitter to see where a disaster might be occurring next so as to have quick response times. <br><br>Our solution aims to complete this task, by building a model that can create predictions on sets of tweets and classify each one as talking about a disaster or not. Through creating our model from scratch rather than using any common machine learning algorithms that already exist(like sklearn’s MultinomialNB), we were able to classify tweets with an accuracy of around 80%, creating a viable solution not detrimented by overfitting.
+
+*Related Work*
+
+As this is a Kaggle competition, there are solutions very readily available to this problem, but we wanted to take a different approach and see the best results we could get without using any previously made models. There are a variety of methods that have been commonly used for this problem, such as logistic regression, decision trees, random forest, gradient boosting, and others. In the discussions section under the competition, many people also commonly consider using [BERT](https://towardsdatascience.com/bert-explained-state-of-the-art-language-model-for-nlp-f8b21a9b6270)(Bidirectional Encoder Representations from Transformers), which is a method to understand the contextual relations between words by reading them all at once rather than in a left-to-right or right-to-left manner.<br><br> As we did our research, we discovered the [Multinomial Naive Bayes](https://www.upgrad.com/blog/multinomial-naive-bayes-explained/#:~:text=The%20Multinomial%20Naive%20Bayes%20algorithm%20is%20a%20Bayesian%20learning%20approach,tag%20with%20the%20greatest%20chance.) approach to NLP and noticed that there were not many solutions to this problem using this method. Any of the solutions we did encounter involved usage of [sklearn’s built in MultinomialNB classifier](https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html), but we wanted to further challenge ourselves to create a better classifier for this problem from scratch. Creating a model from scratch would prove to be a much more difficult task than just using a pre-existing one, as we will discuss further in the Methods section.
+
+*Data*
+
+The original dataset for this model comes from the Kaggle competition. This dataset has 7613 tweets and a tweet can be a maximum of 280 characters according to Twitter’s rules.  We aimed to make a 80/20 split with 80% for the training and 20% for the test. However, while aiming to make the model accurate for the given dataset, we ran into issues regarding the form of the words in each tweet. Due to punctuation and unnecessary characters, a lot of the words would mean the same thing but not be the same. <br><Br>To fix this, we had a preprocessing function in our model that used the Natural Language ToolKit to strip the tweets of stop words. Stop words would include punctuation and characters that had no relevance to the dataset. We initially also used the same package to lemmatize and stem the words but as we experimented more with our model, we realized that it did not make a significant difference for the amount of computation it took. In many instances, the loss after lemmatization and stemming of the dataset was higher than just removing stop words. Due to this, we decided to just implement a removal of unnecessary characters and punctuation.
+
+*Methods*
+
+Originally, our group started out creating a model using sklearn’s MultinomialNB model by finding counts of certain features, such as tweet length, word count, stopword count, punctuation count, hashtag count, and a few others. After calculating amounts of these features, the model would vectorize the tweet using sklearn’s CountVectorizer, and then use this as input into the MultinomialNB model. This model would predict with an accuracy of about 78-82% depending on some hyperparameter adjustment, but we were not satisfied with our results from this model as it required little to no work since we just filtered data and inputted it into the model. So, rather than continuing with this approach, we decided to create our own Multinomial Naive Bayes model from scratch.<br><br> Since we wanted to create a fast working model to solve this problem, MNB would prove to be one of the fastest ways to do so since it requires the least amount of calculations, each being a simple probability calculation using Bayes theorem. The algorithm is based upon this formula: P(A|B) = P(A) * P(B|A)/P(B) P(A|B)=P(B|A)*P(A)P(B). In this case, the way this formula applies is that the P(word being part of a certain class) = P(class having that word) * P(word showing up)/P(tweet belonging to class). We use this to calculate the prior probabilities of each word being part of a certain class in our fit function. This fit function also saves two dictionaries: one dictionary which gives us word frequencies in class 0(not a disaster), and the other which gives word frequencies in class 1(a disaster). These are called Bags of Words for each class.<br><br> Generally, to get a posterior probability, the model would multiply the probabilities of each word to get a final probability, but this comes with some issues. So as to prevent underflow, we decided to use natural logs in our calculations rather than just the original probabilities. This is because if we multiplied a bunch of probabilities which are close to 0, the computer wouldn’t be able to store such numbers once they get sufficiently small. Taking the log of the probabilities bypasses this problem since |log(x)| > 1 where x < .368. Using rules of logs, we know that log(prob1 * prob2) = log(prob1) + log(prob2). So, rather than multiplying each probability, we are able to just sum the logs instead, which is an easier computation. <br><br>Finally, we have two probability sums, one for each class. Whichever is larger is the prediction we store in our array of predictions, and once this is completed for every test example, we can return the array of predictions. After this, we have a simple percentage calculation for accuracy. Our best accuracy from adjusting hyperparameters gets to about 80%, being a solid model built from scratch.
+
+*Experiment*<br><br>
+![Dataset Experiment](/docs/Dataset_Size_Experiment.png) <br><br>
+The first experiment we decided to run was an ablation experiment on the dataset size used for training with data in our model. To change the size of our training dataset, we increment the value of our test_size ratio within the train_test_split function from sklearn.<br>
+```python
+for i in range(1, 9):
+  split_size = float(i)/10 # calculating dataset split size (.1 means 10% for test)
+  X_train , X_test , y_train , y_test = train_test_split(X,y,test_size=split_size, random_state=2020)
+```
+<br>
+So really the way this loop was running was backwards and it decreased our training dataset size through further iterations of the loop. Based on the graph, we see that increasing the training dataset size increased the model test accuracy until about 6000 tweets, at which point the accuracy suddenly drops off. At around 7000 tweets in the training data set, the model begins to overfit on our training dataset, so once new tweets are seen from the testing dataset, it loses accuracy. So we find that using about 80% of the total dataset for training and 20% for testing was an optimal split.
+<br><br>
+
+![Synonyms](/docs/Synonyms_Experiment.png)
+<br><br>
+A form of data augmentation with Natural Language Processing is translating a word to another language then back or using synonyms of random words. In this case, we decided to experiment with the effect of synonyms replacing random words in each tweet. Our experiment here aimed to see how the number of words being substituted by their synonyms affected the accuracy of the model. To do this, we iterated in a certain range and fit the model with the number of synonyms equal to the value of the current iteration (i).
+```python
+for i in range(1, 9):
+ syn_nums = syn_nums.at[i].set(i)
+ nb = NaiveBayes(np.unique(y), 1, i)
+ nb.fit(X_train, y_train) # training the model
+ predClasses = nb.predict(X_test)
+ test_acc = np.sum(predClasses == y_test)/float(len(y_test))
+ test_accs = test_accs.at[i].set(test_acc)
+ print(i, test_acc)
+```
+<br>
+We started with 1 word replaced by a synonym per tweet and ran up to 8 words replaced by their synonyms per tweet. As can be seen in the graph, the most ideal number of synonyms to use per tweet was 3,4, or 5 synonyms with 5 being the best accuracy. In the graph, using 4 synonyms has a drop off compared to 3 or 5 synonyms but it may be due to the randomness of training and testing so we include it in the range of synonyms to use.
+<br><br>
+
+![Hyperparameter](/docs/Hyperparameter_Experiment.png)
+<br>
+The hyperparameter considered in this graph(called a Laplace Smoothing Constant) is related to our calculation for the likelihood probability of each word being part of a specific class. The calculation for the likelihood probability is as follows: [ count(w|c) + lsc] / [ count(c) + |V| + lsc ]. This hyperparameter acts as a smoothing term for words we may not have encountered before, as some words that we see in our testing dataset will not be a part of the dictionaries we created from our train dataset(hence the name Laplace “Smoothing” Constant). So, the constant ensures that the value of the probability will not be 0 for words we haven’t seen before, as this would very negatively impact our results. To see the effects of this constant on our model, we incremented it from 0 - 1.0 inclusive with a step size of .1 using the following code:
+```python
+for i in range(0, 11):
+  lsc = float(i)/10
+  lsc_vals = lsc_vals.at[i].set(lsc)
+  nb = NaiveBayes(np.unique(y), lsc, 0)
+```
+<br>
+The fact that a 0 value for this LSC would be detrimental to the model is reflected in the graph shown above as the accuracy of the model when the hyperparameter is equal to 0 is near 50%, just barely better than a random guess for an output. Overall, our results show that the smoothing constant’s actual value does not matter so long as it is not equal to 0.
+
+*Conclusion*
+
+Using these graphs, the best results for the model came from keeping the hyperparameter for the Laplace Smoothing Constant at 1, using 5 synonyms of non-stop words per tweet, and training with 80% of the dataset. Experiments were also run to see if increasing the Laplace Smoothing Constant above 1 affected the accuracy but it did not yield any significant increase. The accuracy for our final model was ~0.798 but it is subject to change with randomness resulting in accuracies generally between 0.7904 and 0.7990. A possible improvement in the current final model would be the use of a noise function that reduces the noise that some buzz words may cause. These words are likely to appear in many tweets both true and false, without adding much meaning to the actual tweet. In cases like that, they would have to have reduced weight in the probabilities(but not zero). From this project, we were able to get a solid insight into the world of Natural Language Processing, specifically using Multinomial Naive Bayes Theorem to solve our problem.
